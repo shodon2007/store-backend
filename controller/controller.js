@@ -26,16 +26,6 @@ class Controller {
         const data = await queryDatabase(query);
         res.json(data);
     }
-    async getBrand(req, res) {
-        const { type } = req.query;
-        const query = `
-        SELECT DISTINCT brand.id, brand.name from brand 
-        INNER JOIN product ON brand.id = product.brand_id
-        INNER JOIN type ON product.type_id = type.id
-        WHERE type.name = "${type}"`;
-        const data = await queryDatabase(query);
-        res.json(data);
-    }
 }
 
 module.exports = new Controller();
