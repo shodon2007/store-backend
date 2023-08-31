@@ -1,23 +1,16 @@
-require('dotenv').config();
 const express = require('express');
-const router = require('./router/index.js');
 const cors = require('cors');
-
+const router = require('./routes/index.js')
+const path = require('path');
 
 const app = express();
-const PORT = process.env.PORT;
+const PORT = 3000;
 
+app.use(express.static(path.resolve(__dirname, 'static')));
 app.use(cors());
-app.use(express.static('./static'))
-app.use('/api', router);
+app.use(express.json())
+app.use(router);
 
-
-function start() {
-    try {
-        app.listen(PORT, () => console.log('Server started on port', PORT));
-    } catch (e) {
-        throw new Error('ошибка')
-    }
-}
-
-start();
+app.listen(PORT, () => {
+    console.log('started on port', PORT);
+})
