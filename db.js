@@ -23,13 +23,16 @@ async function getCatalog() {
     return data;
 }
 
-async function getProductsFromDB(type) {
+async function getProductsFromDB(type, brand) {
+    if (brand === 'all') {
+
+    }
     const [data] = await conn.promise().query(`
     SELECT device.*, brand.name AS 'brand'
     FROM device
     INNER JOIN type ON device.type_id = type.id
     INNER JOIN brand ON device.brand_id = brand.id
-    WHERE type.name = ?`, [type]);
+    WHERE type.name = ? ${brand !== 'all' ? 'AND brand.name = ?' : ''}`, [type, brand]);
     return data;
 }
 
@@ -44,4 +47,14 @@ async function getProductFromDB(id) {
     return { ...product[0], attributes };
 }
 
-module.exports = { registrationUser, getUser, getCatalog, getProductsFromDB, getProductFromDB };
+async function getBrandFromDB(type) {
+    const [data] = await conn.promise().query(`
+    SELECT brand.*
+    FROM device
+    INNER JOIN type ON device.type_id = type.id
+    INNER JOIN brand ON device.brand_id = brand.id
+    WHERE type.name = ?`, [type]);
+    return data;
+}
+
+module.exports = { registrationUser, getUser, getCatalog, getProductsFromDB, getProductFromDB, getBrandFromDB };
