@@ -46,7 +46,7 @@ async function getProductFromDB(id) {
 
 async function getBrandFromDB(type) {
     const [data] = await conn.promise().query(`
-    SELECT brand.*
+    SELECT DISTINCT brand.*
     FROM device
     INNER JOIN type ON device.type_id = type.id
     INNER JOIN brand ON device.brand_id = brand.id
