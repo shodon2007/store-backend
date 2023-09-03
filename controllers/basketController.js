@@ -1,7 +1,30 @@
+const jwt = require('jsonwebtoken');
+const { checkBasketInBD, addBasketInDB, removeBasketInDB, getBasketInBD } = require('../db');
+
 class basketController {
-    async addedInBasket(req, res) {
-        const { device_id, user_id } = req.query;
-        res.send('heelo word')
+    async add(req, res) {
+        const { user, device_id } = req.query;
+        await addBasketInDB(user, device_id);
+        res.json(true);
+    }
+    async remove(req, res) {
+        const { user, device_id } = req.query;
+        await removeBasketInDB(user, device_id);
+        res.json(true);
+    }
+    async get(req, res) {
+        const { user } = req.query;
+        const data = await getBasketInBD(user);
+        console.log(data);
+        res.json(data);
+    }
+    async check(req, res) {
+        const { user, device_id } = req.query;
+        if (!user) {
+            return res.json(false);
+        }
+        const addedInBasket = await checkBasketInBD(user, device_id)
+        res.json(addedInBasket);
     }
 }
 

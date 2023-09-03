@@ -29,7 +29,6 @@ class authController {
         res.status(200).json({ message: 'Пользователь успешно зашел', token, user: login });
     }
     async registration(req, res) {
-        console.log(req.body)
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
             return res.status(400).json({ message: errors.errors[0].msg })
@@ -47,6 +46,7 @@ class authController {
         await registrationUser(login, hashPassword);
         const newUser = getUser(login);
         const token = generateAccessToken(newUser.id, newUser.role);
+        console.log(token);
         res.status(200).json({ message: 'Пользователь успешно зарегестрирован', token, user: login });
     }
 }
