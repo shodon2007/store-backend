@@ -15,7 +15,6 @@ class basketController {
     async get(req, res) {
         const { user } = req.query;
         const data = await getBasketInBD(user);
-        console.log(data);
         res.json(data);
     }
     async check(req, res) {

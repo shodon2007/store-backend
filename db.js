@@ -38,14 +38,14 @@ async function getProductFromDB(id) {
     SELECT * FROM attribute WHERE device_id = ?
     `, [id]);
     const [product] = await conn.promise().query(`
-    SELECT * FROM device WHERE id = ?
+    SELECT * FROM device
+    WHERE id = ?
     `, [id]);
     product.attributes = attributes;
     return { ...product[0], attributes };
 }
 
 async function getBrandFromDB(type) {
-    console.log(type);
     const [data] = await conn.promise().query(`
     SELECT DISTINCT brand.*
     FROM device
@@ -78,9 +78,10 @@ async function getBasketInBD(username) {
     SELECT id FROM user WHERE login = ?;
     `, [username]);
     const [data] = await conn.promise().query(`
-    SELECT device.* FROM basket
+    SELECT device.*, type.name AS 'type' FROM basket
     INNER JOIN user ON basket.user_id = user.id
     INNER JOIN device ON basket.device_id = device.id
+    INNER JOIN type ON device.type_id = type.id
     WHERE user.id = ?`, [user_id]);
     return data;
 }
