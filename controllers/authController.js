@@ -43,7 +43,7 @@ class authController {
         }
         const hashPassword = bcrypt.hashSync(password, 6)
 
-        await db.registrationUser(login, hashPassword);
+        await db.registration(login, hashPassword);
         const newUser = db.getUser(login);
         const token = generateAccessToken(newUser.id, newUser.role);
         res.status(200).json({ message: 'Пользователь успешно зарегестрирован', token, user: login });
