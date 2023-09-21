@@ -90,7 +90,7 @@ class DatabaseController {
     async removeBasket(login, device_id) {
         const [[{ id: user_id }]] = await conn.promise().query(`
         SELECT id FROM user WHERE login = ?;
-        `, [username]);
+        `, [login]);
         await conn.promise().query(`
         DELETE FROM basket WHERE user_id = ? AND device_id = ?
         `, [+user_id, +device_id]);
