@@ -1,9 +1,9 @@
-const { getBrandFromDB } = require("../db");
+const db = require("../db");
 
 class brandController {
     async getBrand(req, res) {
         const { type } = req.params;
-        const data = await getBrandFromDB(type);
+        const data = await db.getBrand(type);
         res.send(data);
     }
 }

@@ -1,4 +1,4 @@
-const { registrationUser, getUser } = require("../db");
+const db = require("../db");
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const { validationResult } = require('express-validator');
@@ -14,7 +14,7 @@ function generateAccessToken(id, role) {
 class authController {
     async login(req, res) {
         const { login, password } = req.query;
-        const user = await getUser(login);
+        const user = await db.getUser(login);
 
         if (!user) {
             return res.status(400).json({ message: 'Такой пользователь не найден =(' })
@@ -37,16 +37,15 @@ class authController {
         const { login, password } = req.body;
         if (!password) return res.status(400).json({ message: "ХЗ какая ошибка" });
         if (!login) return res.status(400).json({ message: "ХЗ какая ошибка" });
-        const user = await getUser(login);
+        const user = await db.getUser(login);
         if (user) {
             return res.status(400).json({ message: "Такой пользователь уже существует, попробуйте войти" });
         }
         const hashPassword = bcrypt.hashSync(password, 6)
 
-        await registrationUser(login, hashPassword);
-        const newUser = getUser(login);
+        await db.registrationUser(login, hashPassword);
+        const newUser = db.getUser(login);
         const token = generateAccessToken(newUser.id, newUser.role);
-        console.log(token);
         res.status(200).json({ message: 'Пользователь успешно зарегестрирован', token, user: login });
     }
 }

@@ -1,20 +1,19 @@
-const jwt = require('jsonwebtoken');
-const { checkBasketInBD, addBasketInDB, removeBasketInDB, getBasketInBD } = require('../db');
+const db = require('../db');
 
 class basketController {
     async add(req, res) {
         const { user, device_id } = req.query;
-        await addBasketInDB(user, device_id);
+        await db.addBasket(user, device_id);
         res.json(true);
     }
     async remove(req, res) {
         const { user, device_id } = req.query;
-        await removeBasketInDB(user, device_id);
+        await db.removeBasket(user, device_id);
         res.json(true);
     }
     async get(req, res) {
         const { user } = req.query;
-        const data = await getBasketInBD(user);
+        const data = await db.getBasket(user);
         res.json(data);
     }
     async check(req, res) {
@@ -22,7 +21,7 @@ class basketController {
         if (!user) {
             return res.json(false);
         }
-        const addedInBasket = await checkBasketInBD(user, device_id)
+        const addedInBasket = await db.checkBasket(user, device_id)
         res.json(addedInBasket);
     }
 }

@@ -1,16 +1,15 @@
-const { getProductsFromDB, getProductFromDB } = require("../db")
-
+const db = require('../db');
 
 class productsController {
     async getProducts(req, res) {
         const { brand } = req.query;
         const { type } = req.params;
-        const data = await getProductsFromDB(type, brand);
+        const data = await db.getProducts(type, brand);
         res.json(data);
     }
     async getProduct(req, res) {
         const { id } = req.params;
-        const data = await getProductFromDB(id);
+        const data = await db.getProduct(id);
         res.json(data);
     }
 }
