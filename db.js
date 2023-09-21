@@ -24,7 +24,7 @@ class DatabaseController {
         return data;
     }
 
-    async getProducts() {
+    async getProducts(type, brand) {
         const [data] = await conn.promise().query(`
         SELECT device.*, brand.name AS 'brand'
         FROM device
