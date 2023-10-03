@@ -9,6 +9,10 @@ const conn = mysql.createConnection({
 
 conn.connect();
 
+conn.query(
+    'UPDATE FROM attribute SET title = "Операвиная память" where id = 1'
+);
+
 class DatabaseController {
     async getUser(login) {
         const [[user]] = await conn
