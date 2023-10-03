@@ -44,11 +44,9 @@ class DatabaseController {
 
         filter = filter.join(" AND ");
 
-        console.log(filter);
-
         const [data] = await conn.promise().query(
             `
-        SELECT device.*, brand.name AS 'brand'
+        SELECT DISTINCT device.*, brand.name AS 'brand'
         FROM device
         INNER JOIN type ON device.type_id = type.id
         INNER JOIN brand ON device.brand_id = brand.id
