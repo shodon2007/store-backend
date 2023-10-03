@@ -52,11 +52,11 @@ class DatabaseController {
         INNER JOIN brand ON device.brand_id = brand.id
         INNER JOIN attribute ON attribute.device_id = device.id
         WHERE type.name = ? 
-        ${filter ? `AND ${filter}` : ""}`,
+        ${filter ? `AND ${filter}` : ""}
+        GROUP BY device.id`,
             [type]
         );
 
-        console.log(data);
         return data;
     }
 
