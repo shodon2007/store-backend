@@ -4,8 +4,7 @@ class productsController {
     async getProducts(req, res) {
         const { brand, form } = req.query;
         const { type } = req.params;
-        console.log(req.query, req.params);
-        const data = await db.getProducts(type, brand);
+        const data = await db.getProducts(type, brand, form);
         res.json(data);
     }
     async getProduct(req, res) {

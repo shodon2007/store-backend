@@ -29,16 +29,36 @@ class DatabaseController {
         return data;
     }
 
-    async getProducts(type, brand) {
+    async getProducts(type, brand, form) {
+        let filter = [];
+        for (let i in form) {
+            let res = [];
+            form[i].forEach((item) => {
+                res.push(
+                    `attribute.title = '${i}' and attribute.description = '${item}'`
+                );
+            });
+            res = res.join(" OR ");
+            filter.push(`${res}`);
+        }
+
+        filter = filter.join(" AND ");
+
+        console.log(filter);
+
         const [data] = await conn.promise().query(
             `
         SELECT device.*, brand.name AS 'brand'
         FROM device
         INNER JOIN type ON device.type_id = type.id
         INNER JOIN brand ON device.brand_id = brand.id
-        WHERE type.name = ? ${brand !== "all" ? "AND brand.name = ?" : ""}`,
-            [type, brand]
+        INNER JOIN attribute ON attribute.device_id = device.id
+        WHERE type.name = ? 
+        ${filter ? `AND ${filter}` : ""}`,
+            [type]
         );
+
+        console.log(data);
         return data;
     }
 
