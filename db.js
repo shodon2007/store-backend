@@ -9,7 +9,7 @@ const conn = mysql.createConnection({
 
 conn.connect();
 
-conn.query('UPDATE attribute SET title = "Операвиная память" where id = 1');
+conn.query('UPDATE attribute SET title = "Оперативная память" where id = 1');
 
 class DatabaseController {
     async getUser(login) {
