@@ -30,30 +30,54 @@ class DatabaseController {
     }
 
     async getProducts(type, brand, form) {
-        let attribute = [];
-
-        for (let i in form) {
-            let descs = [];
-            form[i].forEach((item) => {
-                descs.push(`attribute.description = "${item}"`);
-            });
-            descs = descs.join(" OR ");
-
-            attribute.push(`(attribute.title = "${i}" AND ${descs})`);
-        }
-
-        attribute = attribute.join(" OR ");
-
-        const [devices] = await conn.promise().query(
-            `SELECT device.* FROM device
+        let [allDevice] = await conn.promise().query(
+            `SELECT device.*
+            FROM device
             INNER JOIN type ON device.type_id = type.id
-            INNER JOIN attribute ON attribute.device_id = device.id
-            WHERE type.name = ? ${attribute ? "AND" + attribute : ""}
-            GROUP BY device.id`,
+            WHERE type.name = ? `,
             [type]
         );
 
-        return devices;
+        allDevice = await Promise.all(
+            allDevice.map(async (item) => {
+                const [attribute] = await conn
+                    .promise()
+                    .query("SELECT * FROM attribute WHERE device_id = ?", [
+                        item.id,
+                    ]);
+                item.attribute = attribute;
+                return item;
+            })
+        );
+
+        allDevice = allDevice.filter((device) => {
+            for (let attribute of device.attribute) {
+                if (
+                    attribute.title in obj &&
+                    obj[attribute.title].includes(attribute.value)
+                ) {
+                    continue;
+                } else {
+                    return false;
+                }
+            }
+
+            return true;
+        });
+
+        console.log(allDevice);
+
+        if (!form) {
+            return allDevice;
+        }
+
+        allDevice.filter((item) => {
+            console.log(item.attribute);
+            item.attribute.forEach((item) => {});
+            // item.attribute.find(el => el.title)
+        });
+
+        return allDevice;
     }
 
     async getProduct(id) {
