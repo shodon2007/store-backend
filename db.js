@@ -1,4 +1,5 @@
 const mysql = require("mysql2");
+const generateFilterQuery = require("./filter");
 
 const conn = mysql.createConnection({
     host: "localhost",
@@ -8,6 +9,11 @@ const conn = mysql.createConnection({
 });
 
 conn.connect();
+
+const inputData = {
+    "Оперативная память": ["6gb", "8gb"],
+    Камера: ["8 mp"],
+};
 
 class DatabaseController {
     async getUser(login) {
@@ -30,54 +36,10 @@ class DatabaseController {
     }
 
     async getProducts(type, brand, form) {
-        let [allDevice] = await conn.promise().query(
-            `SELECT device.*
-            FROM device
-            INNER JOIN type ON device.type_id = type.id
-            WHERE type.name = ? `,
-            [type]
-        );
-
-        allDevice = await Promise.all(
-            allDevice.map(async (item) => {
-                const [attribute] = await conn
-                    .promise()
-                    .query("SELECT * FROM attribute WHERE device_id = ?", [
-                        item.id,
-                    ]);
-                item.attribute = attribute;
-                return item;
-            })
-        );
-
-        allDevice = allDevice.filter((device) => {
-            for (let attribute of device.attribute) {
-                if (
-                    attribute.title in obj &&
-                    obj[attribute.title].includes(attribute.value)
-                ) {
-                    continue;
-                } else {
-                    return false;
-                }
-            }
-
-            return true;
-        });
-
-        console.log(allDevice);
-
-        if (!form) {
-            return allDevice;
-        }
-
-        allDevice.filter((item) => {
-            console.log(item.attribute);
-            item.attribute.forEach((item) => {});
-            // item.attribute.find(el => el.title)
-        });
-
-        return allDevice;
+        const sqlQuery = generateFilterQuery(form);
+        const [products] = await conn.promise().query(sqlQuery);
+        console.log(products);
+        return products;
     }
 
     async getProduct(id) {
