@@ -1,4 +1,4 @@
-function generateFilterQuery(inputData) {
+function generateFilterQuery(inputData, type) {
     const conditions = [];
 
     for (const key in inputData) {
@@ -14,9 +14,11 @@ function generateFilterQuery(inputData) {
     }
 
     if (conditions.length === 0) {
-        return "SELECT * FROM device";
+        return `SELECT device.* FROM device INNER JOIN type ON device.type_id = type.id WHERE type.name = "${type}"`;
     } else {
-        return `SELECT * FROM device WHERE ${conditions.join(" AND ")}`;
+        return `SELECT device.* FROM device INNER JOIN type ON device.type_id = type.id WHERE type.name = "${type}" AND ${conditions.join(
+            " AND "
+        )}`;
     }
 }
 
