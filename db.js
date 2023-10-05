@@ -9,8 +9,6 @@ const conn = mysql.createConnection({
 
 conn.connect();
 
-conn.query('UPDATE attribute SET title = "Оперативная память" where id = 1');
-
 class DatabaseController {
     async getUser(login) {
         const [[user]] = await conn
@@ -32,34 +30,30 @@ class DatabaseController {
     }
 
     async getProducts(type, brand, form) {
-        let filter = [];
+        let attribute = [];
+
         for (let i in form) {
-            let res = [];
+            let descs = [];
             form[i].forEach((item) => {
-                res.push(
-                    `attribute.title = '${i}' and attribute.description = '${item}'`
-                );
+                descs.push(`attribute.description = "${item}"`);
             });
-            res = res.join(" OR ");
-            filter.push(`${res}`);
+            descs = descs.join(" OR ");
+
+            attribute.push(`(attribute.title = "${i}" AND ${descs})`);
         }
 
-        filter = filter.join(" AND ");
+        attribute = attribute.join(" OR ");
 
-        const [data] = await conn.promise().query(
-            `
-        SELECT DISTINCT device.*, brand.name AS 'brand'
-        FROM device
-        INNER JOIN type ON device.type_id = type.id
-        INNER JOIN brand ON device.brand_id = brand.id
-        INNER JOIN attribute ON attribute.device_id = device.id
-        WHERE type.name = ? 
-        ${filter ? `AND ${filter}` : ""}
-        GROUP BY device.id`,
+        const [devices] = await conn.promise().query(
+            `SELECT device.* FROM device
+            INNER JOIN type ON device.type_id = type.id
+            INNER JOIN attribute ON attribute.device_id = device.id
+            WHERE type.name = ? ${attribute ? "AND" + attribute : ""}
+            GROUP BY device.id`,
             [type]
         );
 
-        return data;
+        return devices;
     }
 
     async getProduct(id) {
