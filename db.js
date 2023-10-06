@@ -35,9 +35,8 @@ class DatabaseController {
         return data;
     }
 
-    async getProducts(type, brand, form) {
-        const sqlQuery = generateFilterQuery(form, type);
-        console.log(sqlQuery);
+    async getProducts(type, form) {
+        const sqlQuery = generateFilterQuery(form.filter, type);
         const [products] = await conn.promise().query(sqlQuery);
         return products;
     }

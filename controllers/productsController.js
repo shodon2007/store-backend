@@ -2,10 +2,11 @@ const db = require("../db");
 
 class productsController {
     async getProducts(req, res) {
-        const { brand, form } = req.query;
+        const { form } = req.query;
         const { type } = req.params;
 
-        const data = await db.getProducts(type, brand, form);
+        const data = await db.getProducts(type, form);
+        console.log(data);
         res.json(data);
     }
     async getProduct(req, res) {
