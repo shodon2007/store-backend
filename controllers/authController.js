@@ -1,14 +1,14 @@
 const db = require("../db");
-const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
-const { validationResult } = require('express-validator');
+const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
+const { validationResult } = require("express-validator");
 
 function generateAccessToken(id, role) {
     const payload = {
         id,
-        role
-    }
-    return jwt.sign(payload, 'shodon2007', { expiresIn: '24h' })
+        role,
+    };
+    return jwt.sign(payload, "shodon2007", { expiresIn: "24h" });
 }
 
 class authController {
@@ -17,38 +17,50 @@ class authController {
         const user = await db.getUser(login);
 
         if (!user) {
-            return res.status(400).json({ message: 'Такой пользователь не найден =(' })
+            return res
+                .status(400)
+                .json({ message: "Такой пользователь не найден =(" });
         }
 
         const validPassword = bcrypt.compareSync(password, user.password);
 
         if (!validPassword) {
-            return res.status(400).json({ message: 'Неверный пароль' })
+            return res.status(400).json({ message: "Неверный пароль" });
         }
         const token = generateAccessToken(user.id, user.role);
-        res.status(200).json({ message: 'Пользователь успешно зашел', token, user: login });
+        res.status(200).json({
+            message: "Пользователь успешно зашел",
+            token,
+            user: login,
+        });
     }
     async registration(req, res) {
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
-            return res.status(400).json({ message: errors.errors[0].msg })
+            return res.status(400).json({ message: errors.errors[0].msg });
         }
 
         const { login, password } = req.body;
-        if (!password) return res.status(400).json({ message: "ХЗ какая ошибка" });
+        if (!password)
+            return res.status(400).json({ message: "ХЗ какая ошибка" });
         if (!login) return res.status(400).json({ message: "ХЗ какая ошибка" });
         const user = await db.getUser(login);
         if (user) {
-            return res.status(400).json({ message: "Такой пользователь уже существует, попробуйте войти" });
+            return res.status(400).json({
+                message: "Такой пользователь уже существует, попробуйте войти",
+            });
         }
-        const hashPassword = bcrypt.hashSync(password, 6)
+        const hashPassword = bcrypt.hashSync(password, 6);
 
         await db.registration(login, hashPassword);
         const newUser = db.getUser(login);
         const token = generateAccessToken(newUser.id, newUser.role);
-        res.status(200).json({ message: 'Пользователь успешно зарегестрирован', token, user: login });
+        res.status(200).json({
+            message: "Пользователь успешно зарегестрирован",
+            token,
+            user: login,
+        });
     }
 }
-
 
 module.exports = new authController();
