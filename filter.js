@@ -34,7 +34,11 @@ function generateFilterQuery(inputData, type) {
         }
     }
 
-    let query = `SELECT device.* FROM device INNER JOIN type ON device.type_id = type.id WHERE type.name = "${type}"`;
+    let query = `
+    SELECT device.*, brand.name AS 'brand' FROM device
+    INNER JOIN type ON device.type_id = type.id
+    INNER JOIN brand ON device.brand_id = brand.id
+    WHERE type.name = "${type}"`;
 
     if (conditions.length > 0) {
         query += ` AND ${conditions.join(" AND ")}`;

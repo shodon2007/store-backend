@@ -44,7 +44,6 @@ class DatabaseController {
 
     async getProducts(type, form) {
         const sqlQuery = generateFilterQuery(form, type);
-        console.log(sqlQuery);
         return await sendQuery(sqlQuery);
     }
 
