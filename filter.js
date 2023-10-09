@@ -34,13 +34,30 @@ function generateFilterQuery(inputData, type) {
         }
     }
 
-    if (conditions.length === 0) {
-        return `SELECT device.* FROM device INNER JOIN type ON device.type_id = type.id WHERE type.name = "${type}"`;
-    } else {
-        return `SELECT device.* FROM device INNER JOIN type ON device.type_id = type.id WHERE type.name = "${type}" AND ${conditions.join(
-            " AND "
-        )}`;
+    let query = `SELECT device.* FROM device INNER JOIN type ON device.type_id = type.id WHERE type.name = "${type}"`;
+
+    if (conditions.length > 0) {
+        query += ` AND ${conditions.join(" AND ")}`;
     }
+
+    // Добавляем сортировку, если она указана
+    if (inputData.sort) {
+        let sort = " ORDER BY";
+        if (inputData.sort === "price") {
+            sort += " device.price";
+        }
+        if (inputData.sort === "name") {
+            sort += " device.name";
+        }
+        if (inputData.sort === "date" || inputData.sort === "none") {
+            sort += " device.id";
+        }
+        query += sort;
+
+        console.log(query);
+    }
+
+    return query;
 }
 
 function isValidPriceFilter(priceFilter) {
