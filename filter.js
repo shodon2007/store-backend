@@ -65,7 +65,13 @@ function generateFilterQuery(inputData, type) {
 }
 
 function isValidPriceFilter(priceFilter) {
-    return priceFilter.min >= 0 && priceFilter.max >= priceFilter.min;
+    priceFilter.max = +priceFilter.max;
+    priceFilter.min = +priceFilter.min;
+    return (
+        priceFilter.min >= 0 &&
+        priceFilter.max !== 0 &&
+        priceFilter.max >= priceFilter.min
+    );
 }
 
 module.exports = generateFilterQuery;
