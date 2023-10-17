@@ -139,6 +139,20 @@ class DatabaseController {
             type
         );
     }
+
+    async addDevice(img, { name, price, type, brand }) {
+        return await sendQuery(
+            `INSERT INTO device (name, price, type_id, brand_id, img) VALUES (
+                ?, ?, ?, ?, ?
+            )
+            `,
+            name,
+            price,
+            type,
+            brand,
+            img
+        );
+    }
 }
 
 module.exports = new DatabaseController();
