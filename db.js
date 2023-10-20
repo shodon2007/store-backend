@@ -141,6 +141,10 @@ class DatabaseController {
     }
 
     async addDevice(img, { name, price, type, brand }) {
+        const [{ id }] = await sendQuery(
+            "SELECT id FROM brand WHERE name = ?",
+            brand
+        );
         return await sendQuery(
             `INSERT INTO device (name, price, type_id, brand_id, img) VALUES (
                 ?, ?, ?, ?, ?
@@ -149,7 +153,7 @@ class DatabaseController {
             name,
             price,
             type,
-            brand,
+            id,
             img
         );
     }
