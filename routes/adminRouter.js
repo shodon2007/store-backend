@@ -13,6 +13,7 @@ const storage = multer.diskStorage({
 const upload = multer({ storage });
 
 router.post("/addDevice", upload.single("image"), async (req, res) => {
+    console.log("start helloworld");
     if (!req.file) {
         return res.status(400).json({ error: "No file uploaded" });
     }
